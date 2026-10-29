@@ -1,9 +1,4 @@
-// Browser port of src/propagation.py, src/payoff_model.py, src/equilibrium.py and
-// src/network_simulation.py. tests/test_js_parity.py checks the deterministic parts
-// against the Python source of truth.
-
-export const DEFAULTS = { population: 10000, initialExposed: 100, beta: 0.35, moderation: 0.50, steps: 30, debunk: 0.05 };
-export const POLICIES = [["No moderation", 0], ["Weak", 0.25], ["Moderate", 0.55], ["Strong", 0.85]];
+export const DEFAULTS = { population: 10000, initialExposed: 100, beta: 0.35, moderation: 0.50, steps: 30 };
 
 export const SCENARIO_PRESETS = {
   "Default Course Baseline": {
@@ -61,44 +56,10 @@ export function logistic(p) {
   return I;
 }
 
-// SIR: sharers are debunked at rate gamma and stop spreading.
-export function sir(p) {
-  const N = p.population, k = p.beta * (1 - p.moderation), g = p.debunk;
-  let S = N - Math.min(N, p.initialExposed), I = Math.min(N, p.initialExposed);
-  const out = [I];
-  for (let t = 0; t < p.steps; t++) {
-    const inf = Math.min(S, Math.max(0, k * S * I / N));
-    const rec = Math.min(I, Math.max(0, g * I));
-    S -= inf; I = Math.max(0, I + inf - rec);
-    out.push(I);
-  }
-  return out;
-}
-
-export function summarise(series, N) {
-  const peak = Math.max(...series);
-  const d = series.slice(1).map((v, i) => v - series[i]);
-  const inflection = d.length && Math.max(...d) > 0 ? d.indexOf(Math.max(...d)) : null;
-  const first = (f) => { const i = series.findIndex((v) => v >= f * N); return i < 0 ? null : i; };
-  return { final: series.at(-1), peak, peakStep: series.indexOf(peak), inflection, t50: first(0.5), t90: first(0.9) };
-}
-
 /* ------------------------------------------------------------ the game */
 // Rows: Sharer (S spread / N stay quiet). Columns: Platform (W weak / M strong).
 export const BASE_PAYOFFS = { SW: [5, -4], SM: [-2, 3], NW: [1, 0], NM: [0, 2] };
 const near = (a, b) => Math.abs(a - b) < 1e-9;
-
-export function endogenousPayoffs(beta, m, finalFrac, c = { mod: 1.5, pen: 4, viral: 5, rep: 4 }) {
-  // Round half to even on the x100 value, like np.round, so ties such as 1.625 agree with Python.
-  const r2 = (v) => { const x = v * 100, f = Math.floor(x); return (x - f === 0.5 ? (f % 2 ? f + 1 : f) : Math.round(x)) / 100; };
-  const viral = r2(c.viral * (beta / 0.35));
-  return {
-    SW: [viral, r2(-c.rep * Math.max(0.15, finalFrac))],
-    SM: [r2(viral * (1 - m) - c.pen * m), r2(3 * (1 - finalFrac * 0.5) - c.mod * m)],
-    NW: [1, 0],
-    NM: [0, r2(2 - c.mod * m)],
-  };
-}
 
 // m* where the sharer's payoff for spreading under strong moderation hits zero.
 export function tippingM(beta, pen = 4, viral = 5) {

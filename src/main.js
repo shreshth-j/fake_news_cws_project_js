@@ -6,8 +6,8 @@ import "./style.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  DEFAULTS, POLICIES, BASE_PAYOFFS, SCENARIO_PRESETS, CELL_LOGIC, CELL_SUBTITLES, SUSC, EXPO, MODR,
-  validationErrors, logistic, summarise, analyse, deviations, tippingM, makeGraph, runNetwork,
+  DEFAULTS, BASE_PAYOFFS, SCENARIO_PRESETS, CELL_LOGIC, CELL_SUBTITLES, SUSC, EXPO, MODR,
+  validationErrors, logistic, analyse, deviations, tippingM, makeGraph, runNetwork,
 } from "./model.js";
 
 gsap.registerPlugin(ScrollTrigger);
