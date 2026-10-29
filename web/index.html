@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en" data-theme="night">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fake News Propagation &amp; Game Theory Dashboard</title>
+  <meta name="description"
+    content="A strategic game-theoretic model of fake news propagation, platform moderation, Nash equilibria, and macroscopic population diffusion." />
+  <meta name="theme-color" content="#0A0F1E" />
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230A0F1E'/%3E%3Cpath d='M16 4 L26 8 L26 18 C26 24 16 28 16 28 C16 28 6 24 6 18 L6 8 Z' fill='none' stroke='%2300F0FF' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%2310B981'/%3E%3C/svg%3E" />
+  <script>
+    try {
+      const saved = localStorage.getItem("theme");
+      document.documentElement.dataset.theme = saved || "night";
+    } catch {
+      document.documentElement.dataset.theme = "night";
+    }
+  </script>
+</head>
+
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="glow" id="glow" aria-hidden="true"></div>
+
+  <header class="mast" id="top">
+    <a class="mast__brand" href="#top" aria-label="Fake News Game Theory Laboratory, back to top">
+      <span>🛡️</span> Fake News Simulation &amp; Game Theory Lab
+    </a>
+    <nav class="mast__links" aria-label="Sections">
+      <a href="#game">01 · Payoff Matrix</a>
+      <a href="#spread">02 · Diffusion Graph</a>
+      <a href="#concepts">03 · Theory</a>
+      <button type="button" class="theme" id="theme" aria-label="Switch colour theme">
+        <i aria-hidden="true"></i><span id="theme-name">Light</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- Hero Section -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <div class="live-badge">
+              <div class="pulse-dot"></div>
+              Live Simulation &amp; Strategic Engine
+            </div>
+            <div class="hero__authors">
+              <span class="hero__authors-label" style="font-weight: 700;">🎓 Game Theory Project by:</span>
+              <span class="kpi-chip chip-cyan">Shreshth Juneja (2427030246)</span>
+              <span class="kpi-chip chip-cyan">Devaanshee Agarwal (2427030504)</span>
+            </div>
+          </div>
+
+          <h1 id="hero-title" class="hero-title">
+            Fake News Propagation &amp; Game Theory Dashboard
+          </h1>
+          <p class="hero-subtitle">
+            Strategic Threat Modeling: Institutional Platform Moderation vs. Viral Misinformation Contagion Dynamics.
+          </p>
+
+          <div class="hero__ctas">
+            <a class="btn" href="#game">See the Payoff Matrix</a>
+            <a class="btn btn--secondary" href="#spread">Simulate Propagation</a>
+            <a class="link" href="/report.docx" download>Project Report (.docx)</a>
+          </div>
+
+          <!-- Top KPI Cards Row -->
+          <div class="kpi-container" id="hero-kpis">
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Final Exposure</span>
+                <span class="kpi-icon">👥</span>
+              </div>
+              <div class="kpi-value" id="kpi-final">1,248</div>
+              <div class="kpi-chip chip-cyan" id="kpi-final-sub">12.5% of population</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Peak Exposure</span>
+                <span class="kpi-icon">📈</span>
+              </div>
+              <div class="kpi-value" id="kpi-peak">1,248</div>
+              <div class="kpi-chip chip-slate" id="kpi-peak-sub">Baseline was 9,892</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Exposure Reduction</span>
+                <span class="kpi-icon">🛡️</span>
+              </div>
+              <div class="kpi-value" id="kpi-reduction">87.4%</div>
+              <div class="kpi-chip chip-emerald" id="kpi-reduction-sub">Saved 8,644 users</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Nash Equilibrium</span>
+                <span class="kpi-icon">🏆</span>
+              </div>
+              <div class="kpi-value" id="kpi-eq">Profile (N, M)</div>
+              <div class="kpi-chip chip-emerald" id="kpi-eq-sub">(0, 2) Payoffs</div>
+            </div>
+          </div>
+        </div>
+
+        <figure class="hero__fig">
+          <canvas id="hero-net"
+            aria-label="Simulation graph: false narrative diffusion across synthetic network"></canvas>
+          <figcaption class="legend">
+            <span><i class="dot dot--s"></i>Susceptible</span>
+            <span><i class="dot dot--e"></i>Viral Sharers</span>
+            <span><i class="dot dot--m"></i>Moderated / Quarantined</span>
+            <span class="legend__step mono" id="hero-step">Step 0</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker__track" id="ticker"></div>
+    </div>
+
+    <!-- Chapter 01: Payoff Matrix & Strategy -->
+    <section class="chapter" id="game" aria-labelledby="game-title">
+      <div class="wrap">
+        <p class="kicker mono">01 · Strategic Normal-Form Game</p>
+        <h2 id="game-title" class="display">Strategic Deterrence &amp; Institutional Moderation</h2>
+        <p class="lede">Player 1, the <b>Content Sharer</b>, decides whether to Spread (S) or Stay Quiet (N). Player 2,
+          the <b>Platform</b>, chooses Weak (W) or Strong (M) moderation. Each cell shows utilities <b>(u₁, u₂) =
+            (Sharer, Platform)</b>.</p>
+
+        <!-- Presets and Filter Controls Bar -->
+        <div class="controls-bar">
+          <div class="control-group">
+            <label class="control-label" for="scenario-selector">⚡ Scenario Presets:</label>
+            <select id="scenario-selector" class="dark-select">
+              <option value="Default Course Baseline">Default Course Baseline</option>
+              <option value="Highly Viral Outbreak (Low Moderation)">Highly Viral Outbreak (Low Moderation)</option>
+              <option value="Strict Platform Deterrence">Strict Platform Deterrence</option>
+              <option value="Zero Moderation (Laissez-Faire)">Zero Moderation (Laissez-Faire)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <span class="control-label">Highlight Filter Mode:</span>
+            <div class="radio-group" id="highlight-mode-group">
+              <button type="button" class="radio-btn is-active" data-mode="All Elements">All Elements</button>
+              <button type="button" class="radio-btn" data-mode="Best Responses Only">Best Responses Only</button>
+              <button type="button" class="radio-btn" data-mode="Strict Dominance Only">Strict Dominance Only</button>
+              <button type="button" class="radio-btn" data-mode="Nash Equilibrium Only">Nash Equilibrium Only</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <span class="kpi-chip chip-cyan" id="game-taxonomy-badge">🛡️ Deterrence Game</span>
+          </div>
+        </div>
+
+        <!-- 2x2 Normal-Form Glass Matrix -->
+        <div class="matrix-container" id="matrix-wrapper">
+          <!-- Column headers and row cells populated dynamically by main.js -->
+        </div>
+
+        <p class="chart__read mono" id="matrix-explain" aria-live="polite" style="margin-top: 1rem;"></p>
+
+        <!-- Payoff Customization Expander -->
+        <details class="tweak" id="payoff-details">
+          <summary><span>✏️ Customize Payoff Numbers</span><span class="tweak__now mono" id="payoff-now"></span>
+          </summary>
+          <div class="tweak__grid" id="payoff-fields">
+            <!-- 4 Profile Cards for SW, SM, NW, NM -->
+          </div>
+          <p class="error" id="payoff-error" role="alert"></p>
+          <div class="tweak__foot">
+            <button type="button" class="btn btn--secondary" id="payoff-reset">🔄 Reset Payoffs to Course
+              Values</button>
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Equilibria and best responses automatically
+              update in real-time.</span>
+          </div>
+        </details>
+
+        <h3 class="display" style="font-size: 1.6rem; margin-top: 3.5rem;">Worked Solution &amp; Equilibrium Proof</h3>
+        <ol class="proof" id="proof"></ol>
+      </div>
+    </section>
+
+    <!-- Chapter 02: Diffusion of a Story -->
+    <section class="chapter" id="spread" aria-labelledby="spread-title">
+      <div class="wrap">
+        <p class="kicker mono">02 · Macroscopic Population Diffusion</p>
+        <h2 id="spread-title" class="display">Viral Propagation Over Time (Logistic Contagion Curve)</h2>
+        <p class="lede">Compare the active moderated policy (m) against the unmitigated viral baseline (m = 0.00). The
+          green shaded area visualizes total <b>Infections Prevented (Users Saved)</b>.</p>
+
+        <div class="lab">
+          <form class="controls" id="spread-form" aria-label="Simulation Controls" onsubmit="return false">
+            <div class="controls-heading">
+              <span>⚙️ Simulation Parameters</span>
+            </div>
+
+            <!-- Model Selection Toggle -->
+            <div class="field">
+              <span>Contagion Model</span>
+              <div class="radio-group" id="model-seg" style="width: 100%;">
+                <button type="button" class="radio-btn is-active" data-v="logistic" style="flex: 1;">Logistic</button>
+              </div>
+            </div>
+
+            <div class="controls-section-label" style="font-size: 0.82rem; font-weight: 700; margin-top: 6px;">👥 1.
+              Population &amp; Seeding</div>
+            <label class="field">
+              <span>Total Population (N) <output id="o-population">10,000</output></span>
+              <input type="range" id="population" min="1000" max="50000" step="1000" value="10000" />
+            </label>
+            <label class="field">
+              <span>Initial Seeds (I₀) <output id="o-initialExposed">100</output></span>
+              <input type="range" id="initialExposed" min="10" max="500" step="10" value="100" />
+            </label>
+
+            <div class="controls-section-label" style="font-size: 0.82rem; font-weight: 700; margin-top: 6px;">📡 2.
+              Transmission &amp; Moderation</div>
+            <label class="field">
+              <span>Sharing Propensity (β) <output id="o-beta">0.35</output></span>
+              <input type="range" id="beta" min="0.05" max="1.00" step="0.01" value="0.35" />
+            </label>
+            <label class="field">
+              <span>Platform Moderation (m) <output id="o-moderation">0.50</output></span>
+              <input type="range" id="moderation" min="0.00" max="1.00" step="0.05" value="0.50" />
+            </label>
+            <label class="field">
+              <span>Simulation Steps (T) <output id="o-steps">30</output></span>
+              <input type="range" id="steps" min="10" max="60" step="5" value="30" />
+            </label>
+
+            <p class="error" id="spread-error" role="alert"></p>
+            <button type="button" class="btn btn--secondary" id="spread-reset" style="margin-top: 6px;">🔄 Reset All to
+              Defaults</button>
+          </form>
+
+          <div class="chart-box">
+            <div class="chart">
+              <svg id="spread-chart" viewBox="0 0 800 420" role="img" aria-labelledby="spread-desc"></svg>
+              <p id="spread-desc" class="sr-only">Exposure trajectory over time comparing active policy against
+                unmitigated baseline.</p>
+              <p class="chart__read mono" id="spread-read" aria-live="off">Hover or touch the chart to inspect step
+                exposure.</p>
+            </div>
+
+            <!-- Bottom Stats Triplet Panel (matching Streamlit app) -->
+            <div class="stats-panel">
+              <div class="stat-item">
+                <div class="stat-label">Baseline Outbreak (m = 0.00)</div>
+                <div class="stat-num" id="stat-baseline" style="color: var(--coral);">9,892 exposed</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Moderated Exposure (Active m)</div>
+                <div class="stat-num" id="stat-moderated" style="color: var(--accent);">1,248 exposed</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Infections Prevented (Green Area)</div>
+                <div class="stat-num" id="stat-saved" style="color: var(--emerald);">8,644 Prevented</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 03: Concepts Used -->
+    <section class="chapter" id="concepts" aria-labelledby="concepts-title">
+      <div class="wrap">
+        <p class="kicker mono">03 · Game Theory &amp; Security Principles</p>
+        <h2 id="concepts-title" class="display">Formal Concepts &amp; Realized Values</h2>
+        <p class="lede">Theoretical definitions linked to the current parameters and payoff configurations.</p>
+        <div class="concepts" id="concepts-list" role="table" aria-label="Game theory concepts"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="team">
+    <div class="wrap footer__grid">
+      <div>
+        <p class="footer__title">Fake News Propagation &amp; Game Theory Dashboard</p>
+        <p class="footer__muted">Interactive Research &amp; Educational Laboratory developed for university-level Game
+          Theory and Information Security demonstration.</p>
+        <p class="footer__muted"><a class="link" href="/report.docx" download>Download Comprehensive Report (.docx)</a>
+        </p>
+      </div>
+      <ul class="footer__team">
+        <li><b>Shreshth Juneja</b><span class="mono">2427030246</span></li>
+        <li><b>Devaanshee Agarwal</b><span class="mono">2427030504</span></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
