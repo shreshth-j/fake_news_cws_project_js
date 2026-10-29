@@ -61,12 +61,6 @@ export function logistic(p) {
 export const BASE_PAYOFFS = { SW: [5, -4], SM: [-2, 3], NW: [1, 0], NM: [0, 2] };
 const near = (a, b) => Math.abs(a - b) < 1e-9;
 
-// m* where the sharer's payoff for spreading under strong moderation hits zero.
-export function tippingM(beta, pen = 4, viral = 5) {
-  const r = viral * (beta / 0.35);
-  return r + pen > 0 ? clamp(r / (r + pen), 0, 1) : 0.5;
-}
-
 export function analyse(P) {
   const u = (s, p) => P[s + p];
   const brSharer = (p) => { const [a, b] = [u("S", p)[0], u("N", p)[0]]; return near(a, b) ? ["S", "N"] : a > b ? ["S"] : ["N"]; };

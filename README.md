@@ -56,7 +56,7 @@ Production assets are bundled into `dist/`.
 ```
 ├── index.html              # Main single-page application entry
 ├── package.json            # Project dependencies and Vite scripts
-├── public/                 # Static assets (including report.docx)
+├── public/                 # Static assets
 ├── src/
 │   ├── main.js             # Application controller, charts & DOM handlers
 │   ├── model.js            # Game theory calculations & diffusion engine

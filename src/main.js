@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   DEFAULTS, BASE_PAYOFFS, SCENARIO_PRESETS, CELL_LOGIC, CELL_SUBTITLES, SUSC, EXPO, MODR,
-  validationErrors, logistic, analyse, deviations, tippingM, makeGraph, runNetwork,
+  validationErrors, logistic, analyse, deviations, makeGraph, runNetwork,
 } from "./model.js";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -424,7 +424,6 @@ function renderConcepts(an, P) {
     ["Nash equilibrium", "uᵢ(s*ᵢ, s*₋ᵢ) ≥ uᵢ(sᵢ, s*₋ᵢ) for all sᵢ", "Stable profile where no player has unilateral incentives to deviate.", () => an.nash.length ? `${an.nash.map((k) => `Profile (${k[0]}, ${k[1]}) with payoffs ${pair(k, P)}`).join("; ")}.` : "No pure-strategy equilibrium."],
     ["Pareto efficiency", "no s′ with uᵢ(s′) ≥ uᵢ(s), one strict", "System-level efficiency where neither party can gain without hurting the other.", () => `Efficient profiles: ${an.pareto.map((k) => `(${k[0]},${k[1]})`).join(", ")}.`],
     ["Logistic Contagion", "Iₜ₊₁ = Iₜ + β(1 − m) Iₜ (1 − Iₜ/N)", "Epidemiological diffusion damped by platform moderation parameter m.", () => `Active β = ${S.p.beta}, m = ${S.p.moderation}: Net rate ${(S.p.beta * (1 - S.p.moderation)).toFixed(2)}.`],
-    ["Tipping Point", "m* = r / (r + c)", "Moderation threshold at which viral sharing ceases to yield positive expected utility.", () => `Critical tipping threshold m* = ${tippingM(S.p.beta).toFixed(2)} at β = ${S.p.beta}.`],
   ];
   $("#concepts-list").innerHTML = CONCEPTS.map(([n, f, d, here]) =>
     `<div class="concept" role="row"><div role="cell"><h3>${n}</h3><p class="formula">${f}</p></div><div role="cell"><p>${d}</p></div><div class="here" role="cell"><small>Current State</small>${here()}</div></div>`).join("");
@@ -726,7 +725,6 @@ function initTicker() {
     `Nash Equilibrium: <b>${an.nash.map(words).join(" or ")}</b>`,
     `Unmitigated Outbreak: <b>${pct(0)}%</b> exposed in ${p.steps} steps`,
     `Institutional Moderation (m = 0.85): Only <b>${pct(0.85)}%</b> exposed`,
-    `Critical Tipping Point: <b>m* = ${tippingM(p.beta).toFixed(2)}</b> at β = ${p.beta}`,
     `Viral Payoff: <b>+${BASE_PAYOFFS.SW[0]}</b> vs weak platform, <b>${num(BASE_PAYOFFS.SM[0])}</b> when penalized`,
   ].map((t) => `<span>${t}</span>`).join("");
   $("#ticker").innerHTML = items + items;
